@@ -7,6 +7,7 @@ from keras.optimizers import rmsprop
 from keras.callbacks import LearningRateScheduler
 from keras.preprocessing.image import ImageDataGenerator
 
+
 def split_data(data_name):
   if data_name == 'mnist':
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
@@ -26,7 +27,8 @@ def split_data(data_name):
     
   return X_train, y_train, X_test, y_test, input_img
 
-# learning_rate scheduler
+
+# Learning_rate scheduler
 def lr_schedule(epoch):
     lrate = 0.001
     if epoch > 4:
@@ -34,6 +36,7 @@ def lr_schedule(epoch):
     elif epoch > 6:
         lrate = 0.0003        
     return lrate
+  
   
 def create_inception_modules(data, num):
     for i in range(num):
@@ -49,6 +52,7 @@ def create_inception_modules(data, num):
         data = concatenate([tower_0, tower_1, tower_2, tower_3], axis=3)
     return data
 
+  
 def create_network(input_img):
   output = create_inception_modules(input_img, 2)
   output = AveragePooling2D((2, 2))(output)
@@ -56,12 +60,13 @@ def create_network(input_img):
   output = Dense(10, activation='softmax')(output)
   return output
 
+
 def get_trained_model(data_name, epochs, batch_size):
   X_train, y_train, X_test, y_test, input_img = split_data(data_name)  
   output = create_network(input_img) 
   model = Model(inputs = input_img, outputs = output)
 
-  # image augmentation
+  # Image augmentation
   datagen = ImageDataGenerator(
       rotation_range=15,
       width_shift_range=0.1,
@@ -88,7 +93,8 @@ def get_trained_model(data_name, epochs, batch_size):
   scores = model.evaluate(X_test, y_test, verbose=0)
   return model, scores
 
-# to change dataset replace 'mnist' to 'cifar10'
+
+# To change dataset you should replace 'mnist' to 'cifar10'
 model, scores = get_trained_model('mnist', 8, 64)
 
 print("Accuracy: %.2f%%" % (scores[1]*100))
